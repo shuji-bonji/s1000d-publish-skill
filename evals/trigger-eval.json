@@ -1,0 +1,22 @@
+[
+  {"query": "この手順を S1000D の手順 DM にして。前提条件が 1 つと手順が 5 つある", "should_trigger": true},
+  {"query": "仕様メモ（Markdown）から説明の DM を作って、検証まで通してほしい", "should_trigger": true},
+  {"query": "この DM を書き直して版を上げて。既存のファイルは CSDB の ~/csdb/proj にある", "should_trigger": true},
+  {"query": "故障探求の DM を作りたい。『電源が入らない』で、はい・いいえで分岐する", "should_trigger": true},
+  {"query": "技術文書の下書きを構造化して S1000D のデータモジュールにしたい。DMC は自動で付けてほしい", "should_trigger": true},
+  {"query": "作った DM が DML に載っているか確認して、載ってなければ教えて", "should_trigger": true},
+  {"query": "S1000D の説明 DM と手順 DM の違いが分からない。この内容はどっちで書くべき？そのまま作ってほしい", "should_trigger": true},
+  {"query": "警告と注意を付けた手順の DM を作って。図は ICN で参照する", "should_trigger": true},
+  {"query": "新しい DM を作ったら、XSD と BREX と参照の検証結果をまとめて報告して", "should_trigger": true},
+  {"query": "プロセス DM を作って、条件分岐と利用者への問いを入れたい", "should_trigger": true},
+  {"query": "体験型マニュアルの JSON（manual.json）を S1000D に一括変換して CSDB に出力したい", "should_trigger": false},
+  {"query": "CSDB の DM をレビューして、STE の観点でコメント DM を作って", "should_trigger": false},
+  {"query": "この DM を英語にして。翻訳した結果を同じ DMC で en-US の DM にしたい", "should_trigger": false},
+  {"query": "S1000D の BREX の nonContextRules を説明して", "should_trigger": false},
+  {"query": "受け取った PDF の署名が有効か確認したい", "should_trigger": false},
+  {"query": "議事録を PDF/A で納品したい。検証まで", "should_trigger": false},
+  {"query": "この XML ファイルを整形して、要素の順序を揃えて", "should_trigger": false},
+  {"query": "DocBook の XML を DITA に変換するスクリプトを書いて", "should_trigger": false},
+  {"query": "README の英語を直して。技術文書なので簡潔に", "should_trigger": false},
+  {"query": "S1000D の情報コード 040 と 520 は何を表す？仕様書から調べて", "should_trigger": false}
+]

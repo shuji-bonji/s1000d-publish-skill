@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/.claude-plugin/plugin.schema.json",
+  "name": "s1000d-publish",
+  "version": "0.1.0",
+  "dependencies": [
+    "s1000d-writer-mcp",
+    "s1000d-verify-mcp"
+  ],
+  "description": "構造化した下書き（DraftDataModule）から S1000D® のデータモジュールを 1 件ずつ作り、検証を通して CSDB に入れる手順の Skill。s1000d-writer-mcp の build_data_module で組み立て、残った修正は候補の中から利用者が選び、書き込み後に s1000d-verify-mcp で確かめ、DML との照合結果を含む Publish Report を返す。XML は書かず、S1000D への準拠は判定しない。ASD とは無関係の個人プロジェクト。",
+  "author": {
+    "name": "shuji-bonji",
+    "email": "bonji@mikuro.jp",
+    "url": "https://github.com/shuji-bonji"
+  },
+  "homepage": "https://github.com/shuji-bonji/s1000d-publish-skill",
+  "repository": "https://github.com/shuji-bonji/s1000d-publish-skill",
+  "license": "MIT",
+  "keywords": ["s1000d", "skill", "authoring", "data-module", "csdb", "dml", "mcp"]
+}
