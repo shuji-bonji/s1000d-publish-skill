@@ -52,9 +52,9 @@ The references hold the criteria: [kinds.md](skills/s1000d-publish/references/ki
 | MCP server | Required | Minimum version | Role |
 |---|---|---|---|
 | [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | Yes | 0.1.1 | `build_data_module`, `apply_fixes` |
-| [s1000d-verify-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-verify-mcp) | Yes | 0.6.0 | `verify_data_module`, `reconcile_dml` |
+| [s1000d-verify-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-verify-mcp) | Yes | 0.6.1 | `verify_data_module`, `reconcile_dml` |
 | [s1000d-brex-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-brex-mcp) | No | 0.4.0 | `explain_brex` |
-| [s1000d-reader-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-reader-mcp) | No | 0.7.0 | `read_data_module` |
+| [s1000d-reader-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-reader-mcp) | No | 0.7.1 | `read_data_module` |
 
 `s1000d-writer-mcp` and `s1000d-verify-mcp` are declared in `dependencies` of `plugin.json`. Without the optional servers, the corresponding items in the report say "not performed (tool not connected)".
 

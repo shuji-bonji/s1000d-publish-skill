@@ -25,9 +25,9 @@ description: 構造化した下書き（題名・段落・手順・警告・表�
 | MCP | 必須/任意 | 最低版 | 役割 |
 |---|---|---|---|
 | s1000d-writer-mcp | **必須** | 0.1.1 | `build_data_module`（採番・組み立て・検証・書き込み）、`apply_fixes`（選んだ修正の適用） |
-| s1000d-verify-mcp | **必須** | 0.6.0 | `verify_data_module`（書いた DM の検証）、`reconcile_dml`（DML との照合）、`check_references` |
+| s1000d-verify-mcp | **必須** | 0.6.1 | `verify_data_module`（書いた DM の検証）、`reconcile_dml`（DML との照合）、`check_references` |
 | s1000d-brex-mcp | 任意 | 0.4.0 | `explain_brex`（プロジェクトの BREX の決まりの説明）、`lookup_value`（許可値） |
-| s1000d-reader-mcp | 任意 | 0.7.0 | `read_data_module`（既存の DM を読んで書き直す） |
+| s1000d-reader-mcp | 任意 | 0.7.1 | `read_data_module`（既存の DM を読んで書き直す） |
 
 writer か verify が未接続なら、作業は成立しない。次を伝えて停止する。
 
@@ -70,6 +70,7 @@ brex があれば、`explain_brex` で、利用者のプロジェクトの BREX 
 
 - **情報コードの既定は無い。** 省略は `input-error`（`/allocation/rules/infoCodeByKind/<種類>`）。意味はプロジェクトが決めるので、利用者が登録したコードを聞く
 - 試作で見本の値を示すときは「試作用の値で意味を持たない。実納品では登録したコードを使う」と必ず添える
+- **`brexDmRef`（従う BREX の DMC）**: 省くと、`S1000D_SPEC_DIR` にある既定 BREX が入る。**既定 BREX が見つからないときは、`brexDmRef` ごと省かれ、BREX は 1 層も照合されない**（`verification.brex.state` は `not-run`。writer 0.1.2 以降は `_notes` にも「BREX was not checked」と出る）。この状態を「BREX 合格」と書かない。プロジェクトの BREX があれば、その DMC を利用者に聞いて渡す
 - 続きの作業なら、前回の応答の `ledger` を `allocation.ledger` に、`icnNext` を `allocation.icn.next` に渡す。**渡さないと、同じ `sourceId` でも分解コードが進んで別の DMC になる**。書き直しで DMC を変えたくないときは、台帳を渡す（保存先の例: `<プロジェクト>.ledger.json`。保存は利用者の確認の後）
 
 ### Phase 4 — 下書きを作る
@@ -114,6 +115,9 @@ brex があれば、`explain_brex` で、利用者のプロジェクトの BREX 
 > [!NOTE]
 > `references.state` が `unresolved` でも、原因が仕様書の章への `dmRef`（モデル識別コード `S1000D`。既定 BREX への参照など）だけのことがある。`fixes[]` が空で `omitted.specificationReferences` が `unresolvedCount` と同じなら、残りは仕様書への参照だけで、CSDB に無いのが通常。内訳に迷ったら verify の `check_references` で確かめ、「仕様書への参照のみ未解決」と書く。`csdbDirs` を渡さないと、参照を探す先が無いという `none` の修正が 1 件付く。
 
+> [!NOTE]
+> **`totals` や参照の状態を読むときの注意（spec モード: 配布物の既定 BREX を使うとき）。** 既定 BREX は仕様書の配布物（`S1000D_SPEC_DIR`）の中にあり、CSDB のフォルダーには無い。`csdbDirs` に書き込み先だけを渡すと、`brexDmRef` が指す既定 BREX への参照が未解決として数えられることがある（core 0.8.1 以降、つまり verify 0.6.1 では、BREX の工程でたどれた層は解決済みになる）。逆に、`verify_csdb` に既定 BREX のフォルダーまで渡すと、既定 BREX 自身の DM も検証の対象に入り、`totals` の件数に加わる。自分が作った DM の件数と合わせるときは、`results[]` の `path` で分けて数える。
+
 ### Phase 6 — 残った修正を片付ける
 
 `fixes[]` の各項目を `confidence` で分ける。
@@ -139,14 +143,16 @@ brex があれば、`explain_brex` で、利用者のプロジェクトの BREX 
 
 1. 書き込み先（`csdbDirs` の 1 件目）、ファイル名、版を利用者に示し、**確認を得る**
 2. `build_data_module` を `write: true` で呼ぶ。`overwrite` は既定の `false` のまま。`write-conflict` が返ったら、同じ名前のファイルがあるので、上書きするか、版を上げるかを利用者に聞く
+   - **版に注意する。** 下書きに `issueInfo` を決めていないと、CSDB に同じ DMC の DM が既にあるとき、版は `issuePolicy`（既定は発行番号を上げる）に従って進む。つまり同じ下書きを `write: true` でもう一度呼んでも `write-conflict` にはならず、次の版（`_002-00`）が書かれる。意図しない版が増えないように、版を決めてから呼ぶ（下書きに `issueInfo` を入れる）。書き直しや呼び直しのときは、前の応答の `issueInfo` を下書きに渡す。同じ版を置き換えるのは、利用者が明示したときの `overwrite: true` だけ
 3. XSD に違反する DM は書かれない（`schema-invalid`）。`allowInvalid: true` は、利用者が明示したときだけ
 4. 応答の `written`（書いたパス）を控える。`ledger` と `icnNext` の保存を提案する
-5. 書いた DM を `verify_data_module`（`path`、`csdbDirs`）で確かめる。結果を Phase 5 の書き方で報告する
+5. 書いた DM を `verify_data_module`（`path`、`csdbDirs`）で確かめる。結果を Phase 5 の書き方で報告する。書いた直後のファイルが verify・reader から見えるかは Phase 8 の注意を読む
 
 ### Phase 8 — DML との照合
 
 verify の `reconcile_dml` を `csdbDirs` で呼ぶ（`path` を省くと、CSDB にある DML と DDN をすべて照合する）。
 
+- **書いた直後の DM が見えること。** verify 0.6.1・reader 0.7.1 以降は、サーバーを起動した後に書いたファイルも次の呼び出しから見える。それより古い版は、起動時に作った CSDB の索引を使い続けるので、書いた直後の DM・PM が見えない（見つからない、件数に入らない）ことがある。その場合は、該当の MCP（verify・reader）を起動し直してからやり直す。作った DM が `not-found` や `notListed` に出ない（そもそも見えない）ときは、DML のせいと決める前にこれを疑う
 - 応答の `lists[]` が空なら、CSDB に DML が無い。「DML なし」と報告する
 - 各 DML の `counts`（`found` / `issue-mismatch` / `not-found` / `not-checked`）と、`notListed`（CSDB にあるのに DML に載っていない DM・PM）を読む。**作った DM が `notListed` にあれば、DML に載っていない**
 - `issue-mismatch` は、DML が指す版と CSDB の版が違う。`foundIssueInfo`（CSDB の最新の版）を添えて報告する
