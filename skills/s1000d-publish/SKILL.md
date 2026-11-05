@@ -48,7 +48,7 @@ writer か verify が未接続なら、作業は成立しない。次を伝え�
 | 出力先の CSDB（`csdbDirs`） | 1 件目が書き込み先。**無いと、参照を解決できず、書き込みもできない** |
 | 機密区分（`securityClassification`） | **必須。** 値は解釈されず、そのまま書かれる。利用者に聞く |
 | 言語 | `languageIsoCode` と `countryIsoCode`（例: `ja` / `JP`） |
-| 適用性の表示文（`applic.displayText`） | 省くと XSD の検証で落ちる。全製品に当てはまるなら「すべて」など、利用者の言葉で |
+| 適用性の表示文（`applic.displayText`） | 省くと `input-error`（`path` は `/applic`。writer 0.1.x では XSD の検証で落ちる）。全製品に当てはまるなら「すべて」など、利用者の言葉で |
 
 ### Phase 1 — 種類を決める
 

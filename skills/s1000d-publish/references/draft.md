@@ -9,7 +9,7 @@
 | 必須の項目 | `kind`、`language`、`title`（`techName` は必須、`infoName` は任意）、`securityClassification`、`body` |
 | 識別 | `sourceId` を付ける。DMC を省くと、`sourceId` と `allocation` から採番される。**同じ `sourceId` には同じ DMC が付く**（台帳 `ledger` を渡すとき）。DMC を自分で指定したいときだけ `dmCode` を書く（pm は `pmCode`）。`sourceId`・`dmCode`・`pmCode` のどれも無いと入力の誤り |
 | 機密区分 | `securityClassification` は**省略できない**。値は解釈されずそのまま書かれる。利用者に聞く。許可値はプロジェクトの BREX にある（brex の `lookup_value`、`target: "securityClassification"`） |
-| 適用性 | `applic` を**省くと `applic` 要素が置かれず、XSD の検証で落ちる**（XSD は `applic` か `applicRef` を要求する）。最低限 `{ "displayText": "すべて" }` を書く。機械で判定したい条件は `assert`（複数なら `andOr`）で足す。値は利用者に聞く |
+| 適用性 | `applic` は**省けない**（XSD は `applic` か `applicRef` を要求する）。省くと、s1000d-writer-mcp 0.2.0 以降は組み立てずに `input-error`（`path` は `/applic`）を返す（0.1.x は組み立てて XSD の検証で落ちる）。最低限 `{ "displayText": "すべて" }` を書く。機械で判定したい条件は `assert`（複数なら `andOr`）で足す。値は利用者に聞く |
 | 企業コード | `responsiblePartnerCompany`・`originator` を省くと `allocation.icn.cageCode` が入る |
 | 発行日 | `issueDate`（`YYYY-MM-DD`）を省くと実行日。応答の `_notes` に書かれる |
 | 版 | `issueInfo` を省くと、新規は `001-00`、既存の DM があれば `issuePolicy` に従う（既定は発行番号を上げる） |
