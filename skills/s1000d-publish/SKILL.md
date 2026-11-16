@@ -24,7 +24,7 @@ description: 構造化した下書き（題名・段落・手順・警告・表�
 
 | MCP | 必須/任意 | 最低版 | 役割 |
 |---|---|---|---|
-| s1000d-writer-mcp | **必須** | 0.1.1 | `build_data_module`（採番・組み立て・検証・書き込み）、`apply_fixes`（選んだ修正の適用） |
+| s1000d-writer-mcp | **必須** | 0.4.0 | `build_data_module`（採番・組み立て・検証・書き込み）、`apply_fixes`（選んだ修正の適用） |
 | s1000d-verify-mcp | **必須** | 0.6.1 | `verify_data_module`（書いた DM の検証）、`reconcile_dml`（DML との照合）、`check_references` |
 | s1000d-brex-mcp | 任意 | 0.4.0 | `explain_brex`（プロジェクトの BREX の決まりの説明）、`lookup_value`（許可値） |
 | s1000d-reader-mcp | 任意 | 0.7.1 | `read_data_module`（CSDB にある DM の題名・版・参照先を確かめる。読んだ本文を下書きに写して作り直すことには使わない） |
@@ -146,7 +146,7 @@ brex があれば、`explain_brex` で、利用者のプロジェクトの BREX 
 
 選んでもらった修正は `apply_fixes` で適用する。
 
-- `selections[]` に、`fixes[]` の `location` と**候補 1 つ**（`action`、`target`、`value`。候補に `position` があればそれも）を写す。写し漏れがあると `candidate-not-offered` で断られる。`position` を受け取るのは writer 0.3.1 より後の版。0.3.1 までは、`position` が付いた候補（兄弟を前に足す候補）は適用できないので、利用者に伝える。候補の外の値や範囲に合わない値は `rejected[]` に理由付きで返る
+- `selections[]` に、`fixes[]` の `location` と**候補 1 つ**（`action`、`target`、`value`。候補に `position` があればそれも）を写す。写し漏れがあると `candidate-not-offered` で断られる。`position` を受け取るのは writer 0.4.0 以降。0.3.1 までは、`position` が付いた候補（兄弟を前に足す候補）は適用できないので、利用者に伝える。候補の外の値や範囲に合わない値は `rejected[]` に理由付きで返る
 - `apply_fixes` は**既存の文書**（`path` か `xml`）を受ける。まだ書いていない DM は、Phase 5 の応答の `xml` を渡す。書いた後なら `path` を渡す（`write: true` なら、その場で上書きされる）
 - `action: "provide"` の候補は、文書ではなく製品の値（`product`）を与えるもの
 - 適用後に再検証される。`verification` を読み直す
