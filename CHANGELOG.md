@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 (2026-11-17)
+
+### 修正
+
+- **`edit_data_module` の手順で、場所（`location.path`）を得る方法が誤っていました。** s1000d-reader-mcp の `read_data_module` は、0.11.1 までは応答に `location` を入れていませんでした。reader 0.12.0 で足した `includeLocation: true` を渡すように、`references/edit.md` の E1・E2 を直しました。前提 MCP の s1000d-reader-mcp の最低版を 0.12.0 に上げました。
+- 親の節点の `text` として返る段落（手順の最初の段落など）は `location` を持たないので、取り除く・移すことができないと書きました。
+
 ## 0.3.0 (2026-11-17)
 
 ### 追加（手順が増えます）

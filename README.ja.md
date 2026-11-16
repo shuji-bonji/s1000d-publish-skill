@@ -54,7 +54,7 @@ flowchart LR
 | [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | 必須 | 0.5.1 | `build_data_module`、`apply_fixes`、`edit_data_module` |
 | [s1000d-verify-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-verify-mcp) | 必須 | 0.6.1 | `verify_data_module`、`reconcile_dml` |
 | [s1000d-brex-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-brex-mcp) | 任意 | 0.4.0 | `explain_brex` |
-| [s1000d-reader-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-reader-mcp) | 任意 | 0.7.1 | `read_data_module` |
+| [s1000d-reader-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-reader-mcp) | 任意 | 0.12.0 | `read_data_module`（`edit_data_module` の手順では必要） |
 
 `s1000d-writer-mcp` と `s1000d-verify-mcp` は `plugin.json` の `dependencies` に宣言してあります。任意のサーバーが無いときは、報告の該当項目に「未実施（ツール未接続）」と書きます。
 

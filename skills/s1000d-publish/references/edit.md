@@ -21,7 +21,7 @@ s1000d-writer-mcp の `edit_data_module`（0.5.1 以降）を使う。このツ�
 ### E1 — 何を変えるかと、版を確かめる
 
 1. どの DM の、どこに、何をするのかを利用者に確かめる
-2. reader の `read_data_module` で DM を読み、`issueInfo` の `inWork` を見る
+2. reader の `read_data_module` を `includeLocation: true` で呼んで DM を読み、`issueInfo` の `inWork` を見る（同じ応答を E2 で使う）
 
 | `inWork` | 行うこと |
 |---|---|
@@ -38,10 +38,11 @@ s1000d-writer-mcp の `edit_data_module`（0.5.1 以降）を使う。このツ�
 
 ### E2 — 場所を得る
 
-編集の場所は、reader の `read_data_module` の応答にある各節点の `location.path` で指す（例: `/dmodule/content/procedure/mainProcedure/proceduralStep[2]`）。
+編集の場所は、reader の `read_data_module` を **`includeLocation: true`** で呼んだ応答にある、各節点の `location.path` で指す（例: `/dmodule/content/procedure/mainProcedure/proceduralStep[2]`）。`includeLocation` を渡さないと、応答に `location` は無い（reader 0.12.0 以降）。
 
 - path を自分で組み立てない。応答にある値を写す
-- reader が未接続で、利用者も path を示せないときは、編集しない。reader の接続の方法を伝える
+- 親の節点の `text` として返る段落（手順の最初の段落など）は、節点が無いので `location` も無い。その段落を取り除く・移す依頼は、path を得られないので、できないと伝える。その段落の前後に足すときは、親の節点を基準にして `first-child`・`last-child` を使うか、隣の節点を基準にする
+- reader が未接続（または 0.12.0 より前）で、利用者も path を示せないときは、編集しない。reader の接続・更新の方法を伝える
 
 ### E3 — 編集を組む
 

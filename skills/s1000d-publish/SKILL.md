@@ -27,7 +27,7 @@ description: 構造化した下書き（題名・段落・手順・警告・表�
 | s1000d-writer-mcp | **必須** | 0.5.1 | `build_data_module`（採番・組み立て・検証・書き込み）、`apply_fixes`（選んだ修正の適用）、`edit_data_module`（CSDB にある DM に節点を足す・取り除く・移す） |
 | s1000d-verify-mcp | **必須** | 0.6.1 | `verify_data_module`（書いた DM の検証）、`reconcile_dml`（DML との照合）、`check_references` |
 | s1000d-brex-mcp | 任意 | 0.4.0 | `explain_brex`（プロジェクトの BREX の決まりの説明）、`lookup_value`（許可値） |
-| s1000d-reader-mcp | 任意 | 0.7.1 | `read_data_module`（CSDB にある DM の題名・版・参照先を確かめる。`edit_data_module` に渡す場所の `location.path` を得る。読んだ本文を下書きに写して作り直すことには使わない） |
+| s1000d-reader-mcp | 任意（`edit_data_module` の手順では必要） | 0.12.0 | `read_data_module`（CSDB にある DM の題名・版・参照先を確かめる。`includeLocation: true` で、`edit_data_module` に渡す場所の `location.path` を得る。読んだ本文を下書きに写して作り直すことには使わない） |
 
 writer か verify が未接続なら、作業は成立しない。次を伝えて停止する。
 
