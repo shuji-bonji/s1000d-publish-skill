@@ -18,5 +18,7 @@
   {"query": "この XML ファイルを整形して、要素の順序を揃えて", "should_trigger": false},
   {"query": "DocBook の XML を DITA に変換するスクリプトを書いて", "should_trigger": false},
   {"query": "README の英語を直して。技術文書なので簡潔に", "should_trigger": false},
-  {"query": "S1000D の情報コード 040 と 520 は何を表す？仕様書から調べて", "should_trigger": false}
+  {"query": "S1000D の情報コード 040 と 520 は何を表す？仕様書から調べて", "should_trigger": false},
+  {"query": "CSDB にある手順 DM の 2 番目の手順の後ろに、手順を 1 つ足して", "should_trigger": true},
+  {"query": "この説明 DM の 3 つ目の段落を削って。元の原稿はもう無い", "should_trigger": true}
 ]

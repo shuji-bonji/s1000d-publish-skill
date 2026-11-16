@@ -17,7 +17,7 @@ This repository is a Skill, not an MCP server. It is a Markdown playbook. It hol
 ```mermaid
 flowchart LR
   D["Material<br/>(text, notes, draft)"] --> S["Skill<br/>s1000d-publish"]
-  S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes"]
+  S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes<br/>edit_data_module"]
   S --> V["s1000d-verify-mcp<br/>verify_data_module / reconcile_dml"]
   S -.-> B["s1000d-brex-mcp<br/>explain_brex"]
   S -.-> R["s1000d-reader-mcp<br/>read_data_module"]
@@ -36,7 +36,7 @@ flowchart LR
 
 ## What publishing looks like
 
-1. Confirm the material, whether it is a new data module or a new issue built from revised material, the CSDB folder and the security classification. The Skill does not read a data module in the CSDB and rebuild it from that reading, because content of the original would be lost.
+1. Confirm the material, whether it is a new data module or a new issue built from revised material, the CSDB folder and the security classification. The Skill does not read a data module in the CSDB and rebuild it from that reading, because content of the original would be lost. To insert, remove or move steps, paragraphs, warnings or list items in a data module that is already in the CSDB, the Skill uses `edit_data_module`, which keeps the original XML (the issue information and change markup are not changed).
 2. Decide the kind with you: description, procedure, process or fault isolation.
 3. If the BREX server is connected, summarize the project's BREX rules for the writer.
 4. Ask for the numbering rules, including the information code for the kind. There is no default for information codes.
@@ -51,7 +51,7 @@ The references hold the criteria: [kinds.md](skills/s1000d-publish/references/ki
 
 | MCP server | Required | Minimum version | Role |
 |---|---|---|---|
-| [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | Yes | 0.4.0 | `build_data_module`, `apply_fixes` |
+| [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | Yes | 0.5.1 | `build_data_module`, `apply_fixes`, `edit_data_module` |
 | [s1000d-verify-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-verify-mcp) | Yes | 0.6.1 | `verify_data_module`, `reconcile_dml` |
 | [s1000d-brex-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-brex-mcp) | No | 0.4.0 | `explain_brex` |
 | [s1000d-reader-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-reader-mcp) | No | 0.7.1 | `read_data_module` |

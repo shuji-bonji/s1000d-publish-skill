@@ -17,7 +17,7 @@
 ```mermaid
 flowchart LR
   D["材料<br/>（文章・メモ・下書き）"] --> S["Skill<br/>s1000d-publish"]
-  S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes"]
+  S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes<br/>edit_data_module"]
   S --> V["s1000d-verify-mcp<br/>verify_data_module / reconcile_dml"]
   S -.-> B["s1000d-brex-mcp<br/>explain_brex"]
   S -.-> R["s1000d-reader-mcp<br/>read_data_module"]
@@ -36,7 +36,7 @@ flowchart LR
 
 ## 作業の流れ
 
-1. 材料、新規か版を上げるのか、CSDB のフォルダー、機密区分を確かめます。CSDB にあるデータモジュールを読んで作り直すことはしません（元の内容が落ちるためです）。
+1. 材料、新規か版を上げるのか、CSDB のフォルダー、機密区分を確かめます。CSDB にあるデータモジュールを読んで作り直すことはしません（元の内容が落ちるためです）。CSDB にあるデータモジュールに手順・段落・警告・リストの項目を足す・取り除く・移すときは、`edit_data_module` で元の XML を保ったまま編集します（版と変更の印は変わりません）。
 2. 種類（説明・手順・プロセス・故障探求）を利用者と決めます。
 3. brex サーバーが接続されていれば、プロジェクトの BREX の決まりを書き手向けに要約します。
 4. 採番の規則を聞きます。種類ごとの情報コードも含みます。情報コードの既定はありません。
@@ -51,7 +51,7 @@ flowchart LR
 
 | MCP サーバー | 必須 | 最低版 | 役割 |
 |---|---|---|---|
-| [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | 必須 | 0.4.0 | `build_data_module`、`apply_fixes` |
+| [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | 必須 | 0.5.1 | `build_data_module`、`apply_fixes`、`edit_data_module` |
 | [s1000d-verify-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-verify-mcp) | 必須 | 0.6.1 | `verify_data_module`、`reconcile_dml` |
 | [s1000d-brex-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-brex-mcp) | 任意 | 0.4.0 | `explain_brex` |
 | [s1000d-reader-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-reader-mcp) | 任意 | 0.7.1 | `read_data_module` |
