@@ -129,6 +129,19 @@
 
 `csdbDirs` は 1 件目が書き込み先。無いと参照が解決できず、書き込みもできない。
 
-## 既存の DM を書き直すとき
+## CSDB にある DM を材料にしない
 
-reader の `read_data_module`（`path` か `dmc`）で読み、返った本文の木を同じ語彙の下書きに直す。読んだ木は書き戻すと同じ木になるように作られている。ただし reader が知らない構造は書けない。reader の応答に読み取れなかった要素（`unknown`）があれば、その部分は下書きに写せないので、利用者に伝える。
+CSDB にある DM を reader の `read_data_module` で読み、返った本文の木を下書きに写して作り直すことはしない。下書きから組み立てると DM の全体が作り直され、次の 2 つが新しい版から無くなる。
+
+- reader が応答に入れていない要素・属性。`content.notReadElements` に数えられるもののほか、応答に現れない属性もある
+- reader は読めるが、下書きに書く形が無い構造。下書きに書けるのは S1000D の一部で、種類ごとに置ける節点は [kinds.md](kinds.md) にある
+
+次の 3 つは別のことなので、混ぜない。
+
+| 知りたいこと | 見るもの |
+|---|---|
+| S1000D の XSD に合っているか | verify の結果（`verification.schema`） |
+| reader が読めているか | `content.unknownElements`（reader が知らない要素）と `content.notReadElements`（あるが中身を読んでいない要素） |
+| 下書きに書けるか | [kinds.md](kinds.md) の節点。`unknownElements` が空でも、下書きに書けない構造はある |
+
+同じ DMC の次の版を作るのは、利用者の手元に元の材料（文章か下書き）があるときだけ。材料から下書きを作り直す。頼まれた内容ごとの扱いは、SKILL.md の Phase 0「CSDB にある DM を直したいと頼まれたとき」。

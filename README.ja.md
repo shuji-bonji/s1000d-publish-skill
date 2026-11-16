@@ -16,7 +16,7 @@
 
 ```mermaid
 flowchart LR
-  D["材料<br/>（文章・メモ・既存の DM）"] --> S["Skill<br/>s1000d-publish"]
+  D["材料<br/>（文章・メモ・下書き）"] --> S["Skill<br/>s1000d-publish"]
   S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes"]
   S --> V["s1000d-verify-mcp<br/>verify_data_module / reconcile_dml"]
   S -.-> B["s1000d-brex-mcp<br/>explain_brex"]
@@ -36,7 +36,7 @@ flowchart LR
 
 ## 作業の流れ
 
-1. 材料、新規か書き直しか、CSDB のフォルダー、機密区分を確かめます。
+1. 材料、新規か版を上げるのか、CSDB のフォルダー、機密区分を確かめます。CSDB にあるデータモジュールを読んで作り直すことはしません（元の内容が落ちるためです）。
 2. 種類（説明・手順・プロセス・故障探求）を利用者と決めます。
 3. brex サーバーが接続されていれば、プロジェクトの BREX の決まりを書き手向けに要約します。
 4. 採番の規則を聞きます。種類ごとの情報コードも含みます。情報コードの既定はありません。

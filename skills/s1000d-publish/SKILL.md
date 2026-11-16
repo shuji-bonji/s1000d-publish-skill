@@ -27,7 +27,7 @@ description: 構造化した下書き（題名・段落・手順・警告・表�
 | s1000d-writer-mcp | **必須** | 0.1.1 | `build_data_module`（採番・組み立て・検証・書き込み）、`apply_fixes`（選んだ修正の適用） |
 | s1000d-verify-mcp | **必須** | 0.6.1 | `verify_data_module`（書いた DM の検証）、`reconcile_dml`（DML との照合）、`check_references` |
 | s1000d-brex-mcp | 任意 | 0.4.0 | `explain_brex`（プロジェクトの BREX の決まりの説明）、`lookup_value`（許可値） |
-| s1000d-reader-mcp | 任意 | 0.7.1 | `read_data_module`（既存の DM を読んで書き直す） |
+| s1000d-reader-mcp | 任意 | 0.7.1 | `read_data_module`（CSDB にある DM の題名・版・参照先を確かめる。読んだ本文を下書きに写して作り直すことには使わない） |
 
 writer か verify が未接続なら、作業は成立しない。次を伝えて停止する。
 
@@ -43,12 +43,26 @@ writer か verify が未接続なら、作業は成立しない。次を伝え�
 
 | 項目 | 確かめること |
 |---|---|
-| 材料 | 文章、メモ、箇条書き、既存の DM のパスのいずれか |
-| 新規か書き直しか | 書き直しなら、対象の DM（`dmc` か `path`）と、版の上げ方（`issuePolicy`: 発行番号を上げる / 作業中番号を上げる / 据え置き） |
+| 材料 | 文章、メモ、箇条書き、以前に作った下書きのいずれか。**CSDB にある DM の XML は材料にしない**（下の「CSDB にある DM を直したいと頼まれたとき」） |
+| 新規か、材料を直して版を上げるか | 版を上げるなら、対象の DMC と、版の上げ方（`issuePolicy`: 発行番号を上げる / 作業中番号を上げる / 据え置き）。元の材料（文章か下書き）が利用者の手元にあることも確かめる |
 | 出力先の CSDB（`csdbDirs`） | 1 件目が書き込み先。**無いと、参照を解決できず、書き込みもできない** |
 | 機密区分（`securityClassification`） | **必須。** 値は解釈されず、そのまま書かれる。利用者に聞く |
 | 言語 | `languageIsoCode` と `countryIsoCode`（例: `ja` / `JP`） |
 | 適用性の表示文（`applic.displayText`） | 省くと `input-error`（`path` は `/applic`。writer 0.1.x では XSD の検証で落ちる）。全製品に当てはまるなら「すべて」など、利用者の言葉で |
+
+#### CSDB にある DM を直したいと頼まれたとき
+
+「この DM を書き直して」と頼まれたら、何をしたいのかを先に確かめる。**CSDB にある DM を reader で読み、その木を下書きに写して `build_data_module` で作り直すことはしない。** 下書きから組み立てると DM の全体が作り直され、次の 2 つが新しい版から無くなるため。
+
+- reader が応答に入れていない要素・属性（`content.notReadElements` に数えられるものと、応答に現れない属性）
+- reader は読めるが、下書きに書く形が無い構造（下書きに書けるのは S1000D の一部。書ける節点は [references/kinds.md](references/kinds.md)）
+
+| 頼まれたこと | 行うこと |
+|---|---|
+| 検証で見つかった問題（XSD・BREX・参照）を直す | `apply_fixes` に DM の `path` を渡す（Phase 6 と同じ）。元の XML を保ったまま、その場所だけが変わる |
+| 別の言語に訳す | この Skill では行わない。`s1000d-translate`（元の XML を保ったまま文だけを差し替える）を案内する |
+| 元の材料（文章か下書き）を直して、同じ DMC の次の版を作る | この Skill で行う。材料から下書きを作り直し、台帳（Phase 3）を渡して同じ DMC にする。**CSDB の DM に、材料に無い変更（人が XML に足した内容など）があれば、新しい版には入らない。** 書く前に利用者に確かめる |
+| 構造を変える（手順を足す、段落を削る、表を足す）。元の材料は無い | **この Skill では扱わない。** できないことと、上の理由（作り直すと元の内容が落ちる）を伝える。元の XML を保ったまま構造を変える操作は、writer にまだ無い |
 
 ### Phase 1 — 種類を決める
 
@@ -71,7 +85,7 @@ brex があれば、`explain_brex` で、利用者のプロジェクトの BREX 
 - **情報コードの既定は無い。** 省略は `input-error`（`/allocation/rules/infoCodeByKind/<種類>`）。意味はプロジェクトが決めるので、利用者が登録したコードを聞く
 - 試作で見本の値を示すときは「試作用の値で意味を持たない。実納品では登録したコードを使う」と必ず添える
 - **`brexDmRef`（従う BREX の DMC）**: 省くと、`S1000D_SPEC_DIR` にある既定 BREX が入る。**既定 BREX が見つからないときは、`brexDmRef` ごと省かれ、BREX は 1 層も照合されない**（`verification.brex.state` は `not-run`。writer 0.1.2 以降は `_notes` にも「BREX was not checked」と出る）。この状態を「BREX 合格」と書かない。プロジェクトの BREX があれば、その DMC を利用者に聞いて渡す
-- 続きの作業なら、前回の応答の `ledger` を `allocation.ledger` に、`icnNext` を `allocation.icn.next` に渡す。**渡さないと、同じ `sourceId` でも分解コードが進んで別の DMC になる**。書き直しで DMC を変えたくないときは、台帳を渡す（保存先の例: `<プロジェクト>.ledger.json`。保存は利用者の確認の後）
+- 続きの作業なら、前回の応答の `ledger` を `allocation.ledger` に、`icnNext` を `allocation.icn.next` に渡す。**渡さないと、同じ `sourceId` でも分解コードが進んで別の DMC になる**。版を上げるときに DMC を変えたくなければ、台帳を渡す（保存先の例: `<プロジェクト>.ledger.json`。保存は利用者の確認の後）
 
 ### Phase 4 — 下書きを作る
 
@@ -80,7 +94,7 @@ brex があれば、`explain_brex` で、利用者のプロジェクトの BREX 
 - 書くのは題名・段落・手順・警告・表・図・参照だけ。DMC・ICN・BREX の参照・版の細部は書かない
 - **参照は `text` に埋め込まず `refs` に書く。** 機密区分は必須、`applic` は省かない
 - 前提条件・事後条件は `requirements` 節点（手順の前後に 1 つずつ）
-- 既存の DM を書き直すときは、reader の `read_data_module`（`dmc` か `path`、`csdbDirs`）で読み、同じ語彙の木として直す。機密区分が付いた DM は、本文を引用する前に利用者に確かめる。reader が未接続なら、利用者に木の元になる文章をもらう
+- 版を上げるときも、下書きは利用者の材料から作る。CSDB にある DM を reader で読んで下書きに写さない（Phase 0 の「CSDB にある DM を直したいと頼まれたとき」）
 - 未確認の値（機密区分、適用性、企業コード）を埋めない
 
 下書きを作ったら、**書く前に利用者に内容を見せて確認する**。木をそのまま見せず、題名・手順の番号と文・警告の位置が分かる形に直す。
@@ -143,7 +157,7 @@ brex があれば、`explain_brex` で、利用者のプロジェクトの BREX 
 
 1. 書き込み先（`csdbDirs` の 1 件目）、ファイル名、版を利用者に示し、**確認を得る**
 2. `build_data_module` を `write: true` で呼ぶ。`overwrite` は既定の `false` のまま。`write-conflict` が返ったら、同じ名前のファイルがあるので、上書きするか、版を上げるかを利用者に聞く
-   - **版に注意する。** 下書きに `issueInfo` を決めていないと、CSDB に同じ DMC の DM が既にあるとき、版は `issuePolicy`（既定は発行番号を上げる）に従って進む。つまり同じ下書きを `write: true` でもう一度呼んでも `write-conflict` にはならず、次の版（`_002-00`）が書かれる。意図しない版が増えないように、版を決めてから呼ぶ（下書きに `issueInfo` を入れる）。書き直しや呼び直しのときは、前の応答の `issueInfo` を下書きに渡す。同じ版を置き換えるのは、利用者が明示したときの `overwrite: true` だけ
+   - **版に注意する。** 下書きに `issueInfo` を決めていないと、CSDB に同じ DMC の DM が既にあるとき、版は `issuePolicy`（既定は発行番号を上げる）に従って進む。つまり同じ下書きを `write: true` でもう一度呼んでも `write-conflict` にはならず、次の版（`_002-00`）が書かれる。意図しない版が増えないように、版を決めてから呼ぶ（下書きに `issueInfo` を入れる）。呼び直しのときは、前の応答の `issueInfo` を下書きに渡す。同じ版を置き換えるのは、利用者が明示したときの `overwrite: true` だけ
 3. XSD に違反する DM は書かれない（`schema-invalid`）。`allowInvalid: true` は、利用者が明示したときだけ
 4. 応答の `written`（書いたパス）を控える。`ledger` と `icnNext` の保存を提案する
 5. 書いた DM を `verify_data_module`（`path`、`csdbDirs`）で確かめる。結果を Phase 5 の書き方で報告する。書いた直後のファイルが verify・reader から見えるかは Phase 8 の注意を読む
@@ -172,3 +186,5 @@ verify の `reconcile_dml` を `csdbDirs` で呼ぶ（`path` を省くと、CSDB
 - `valid` と `passed` を「S1000D に準拠している」と書くこと
 - BREX の決まりを、応答に無い内容で説明すること
 - DML を作る・更新する（writer にまだ無い）
+- CSDB にある DM を reader で読み、その木を下書きに写して作り直すこと（元の内容が落ちる）
+- CSDB にある DM の構造を変えること（元の XML を保つ操作が writer にまだ無い）

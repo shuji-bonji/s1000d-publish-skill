@@ -16,7 +16,7 @@ This repository is a Skill, not an MCP server. It is a Markdown playbook. It hol
 
 ```mermaid
 flowchart LR
-  D["Material<br/>(text, notes, existing DM)"] --> S["Skill<br/>s1000d-publish"]
+  D["Material<br/>(text, notes, draft)"] --> S["Skill<br/>s1000d-publish"]
   S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes"]
   S --> V["s1000d-verify-mcp<br/>verify_data_module / reconcile_dml"]
   S -.-> B["s1000d-brex-mcp<br/>explain_brex"]
@@ -36,7 +36,7 @@ flowchart LR
 
 ## What publishing looks like
 
-1. Confirm the material, whether it is new or a rewrite, the CSDB folder and the security classification.
+1. Confirm the material, whether it is a new data module or a new issue built from revised material, the CSDB folder and the security classification. The Skill does not read a data module in the CSDB and rebuild it from that reading, because content of the original would be lost.
 2. Decide the kind with you: description, procedure, process or fault isolation.
 3. If the BREX server is connected, summarize the project's BREX rules for the writer.
 4. Ask for the numbering rules, including the information code for the kind. There is no default for information codes.
