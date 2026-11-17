@@ -38,11 +38,13 @@ s1000d-writer-mcp の `edit_data_module`（0.5.1 以降）を使う。このツ�
 
 ### E2 — 場所を得る
 
-編集の場所は、reader の `read_data_module` を **`includeLocation: true`** で呼んだ応答にある、各節点の `location.path` で指す（例: `/dmodule/content/procedure/mainProcedure/proceduralStep[2]`）。`includeLocation` を渡さないと、応答に `location` は無い（reader 0.12.0 以降）。
+編集の場所は、reader の `read_data_module` を **`includeLocation: true`** で呼んだ応答にある、各節点の `location.path` で指す（例: `/dmodule/content/procedure/mainProcedure/proceduralStep[2]`）。`includeLocation` を渡さないと、応答に `location` も `textLocations` も無い（reader 0.12.0 以降）。
 
 - path を自分で組み立てない。応答にある値を写す
-- 親の節点の `text` として返る段落（手順の最初の段落など）は、節点が無いので `location` も無い。その段落を取り除く・移す依頼は、path を得られないので、できないと伝える。その段落の前後に足すときは、親の節点を基準にして `first-child`・`last-child` を使うか、隣の節点を基準にする
-- reader が未接続（または 0.12.0 より前）で、利用者も path を示せないときは、編集しない。reader の接続・更新の方法を伝える
+- 手順（`kind: "step"`）の `text` は、その手順の直下にある段落（子を持たないもの）を、すべてつないだ文である。その段落には節点が無いので、`location` も無い。代わりに、手順の節点の `textLocations[]` に、つないだ段落ごとの場所が並びの順に入っている（`textLocations[0]` が `text` の最初の段落）。その段落だけを取り除く・移すときは、`textLocations[i].path` を `at` に写す（reader 0.13.0 以降）
+- `text` のどの部分がどの段落かは、応答からは分からない（段落の文は空白 1 つでつないである）。段落が 2 つ以上あるときは、取り除く・移す段落が何番目かを、E5 で文と一緒に利用者に示して確かめる
+- リストの項目（`listItem`）は、段落が 1 つのときにその段落が `text` になり、`textLocations` は付かない。項目そのもの（`listItem` の `location.path`）を対象にする。段落だけを取り除くと項目が空になり、XSD のエラーで書き込まれない
+- reader が未接続（または 0.12.0 より前）で、利用者も path を示せないときは、編集しない。reader の接続・更新の方法を伝える。reader が 0.12.x のときは `textLocations` が無いので、手順の段落だけを取り除く・移す依頼は、できないと伝える
 
 ### E3 — 編集を組む
 
