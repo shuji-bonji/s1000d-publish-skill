@@ -17,7 +17,7 @@ This repository is a Skill, not an MCP server. It is a Markdown playbook. It hol
 ```mermaid
 flowchart LR
   D["Material<br/>(text, notes, draft)"] --> S["Skill<br/>s1000d-publish"]
-  S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes<br/>edit_data_module"]
+  S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes<br/>edit_data_module / start_revision<br/>add_reason_for_update"]
   S --> V["s1000d-verify-mcp<br/>verify_data_module / reconcile_dml"]
   S -.-> B["s1000d-brex-mcp<br/>explain_brex"]
   S -.-> R["s1000d-reader-mcp<br/>read_data_module"]
@@ -51,7 +51,7 @@ The references hold the criteria: [kinds.md](skills/s1000d-publish/references/ki
 
 | MCP server | Required | Minimum version | Role |
 |---|---|---|---|
-| [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | Yes | 0.5.1 | `build_data_module`, `apply_fixes`, `edit_data_module` |
+| [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | Yes | 0.6.0 | `build_data_module`, `apply_fixes`, `edit_data_module`, `start_revision`, `add_reason_for_update` |
 | [s1000d-verify-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-verify-mcp) | Yes | 0.6.1 | `verify_data_module`, `reconcile_dml` |
 | [s1000d-brex-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-brex-mcp) | No | 0.4.0 | `explain_brex` |
 | [s1000d-reader-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-reader-mcp) | No | 0.13.0 | `read_data_module` (needed for the `edit_data_module` procedure) |

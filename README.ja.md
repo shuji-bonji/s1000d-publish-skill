@@ -17,7 +17,7 @@
 ```mermaid
 flowchart LR
   D["材料<br/>（文章・メモ・下書き）"] --> S["Skill<br/>s1000d-publish"]
-  S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes<br/>edit_data_module"]
+  S --> W["s1000d-writer-mcp<br/>build_data_module / apply_fixes<br/>edit_data_module / start_revision<br/>add_reason_for_update"]
   S --> V["s1000d-verify-mcp<br/>verify_data_module / reconcile_dml"]
   S -.-> B["s1000d-brex-mcp<br/>explain_brex"]
   S -.-> R["s1000d-reader-mcp<br/>read_data_module"]
@@ -51,7 +51,7 @@ flowchart LR
 
 | MCP サーバー | 必須 | 最低版 | 役割 |
 |---|---|---|---|
-| [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | 必須 | 0.5.1 | `build_data_module`、`apply_fixes`、`edit_data_module` |
+| [s1000d-writer-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-writer-mcp) | 必須 | 0.6.0 | `build_data_module`、`apply_fixes`、`edit_data_module`、`start_revision`、`add_reason_for_update` |
 | [s1000d-verify-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-verify-mcp) | 必須 | 0.6.1 | `verify_data_module`、`reconcile_dml` |
 | [s1000d-brex-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-brex-mcp) | 任意 | 0.4.0 | `explain_brex` |
 | [s1000d-reader-mcp](https://www.npmjs.com/package/@shuji-bonji/s1000d-reader-mcp) | 任意 | 0.13.0 | `read_data_module`（`edit_data_module` の手順では必要） |

@@ -24,7 +24,7 @@ description: 構造化した下書き（題名・段落・手順・警告・表�
 
 | MCP | 必須/任意 | 最低版 | 役割 |
 |---|---|---|---|
-| s1000d-writer-mcp | **必須** | 0.5.1 | `build_data_module`（採番・組み立て・検証・書き込み）、`apply_fixes`（選んだ修正の適用）、`edit_data_module`（CSDB にある DM に節点を足す・取り除く・移す） |
+| s1000d-writer-mcp | **必須** | 0.6.0 | `build_data_module`（採番・組み立て・検証・書き込み）、`apply_fixes`（選んだ修正の適用）、`edit_data_module`（CSDB にある DM に節点を足す・取り除く・移す。`marking` で変更の印を付ける）、`start_revision`（発行済みの版から作業中の版を始める）、`add_reason_for_update`（更新の理由を足す） |
 | s1000d-verify-mcp | **必須** | 0.6.1 | `verify_data_module`（書いた DM の検証）、`reconcile_dml`（DML との照合）、`check_references` |
 | s1000d-brex-mcp | 任意 | 0.4.0 | `explain_brex`（プロジェクトの BREX の決まりの説明）、`lookup_value`（許可値） |
 | s1000d-reader-mcp | 任意（`edit_data_module` の手順では必要） | 0.13.0 | `read_data_module`（CSDB にある DM の題名・版・参照先を確かめる。`includeLocation: true` で、`edit_data_module` に渡す場所の `location.path` を得る。読んだ本文を下書きに写して作り直すことには使わない） |
@@ -62,7 +62,7 @@ writer か verify が未接続なら、作業は成立しない。次を伝え�
 | 検証で見つかった問題（XSD・BREX・参照）を直す | `apply_fixes` に DM の `path` を渡す（Phase 6 と同じ）。元の XML を保ったまま、その場所だけが変わる |
 | 別の言語に訳す | この Skill では行わない。`s1000d-translate`（元の XML を保ったまま文だけを差し替える）を案内する |
 | 元の材料（文章か下書き）を直して、同じ DMC の次の版を作る | この Skill で行う。材料から下書きを作り直し、台帳（Phase 3）を渡して同じ DMC にする。**CSDB の DM に、材料に無い変更（人が XML に足した内容など）があれば、新しい版には入らない。** 書く前に利用者に確かめる |
-| 手順・段落・警告（注意・注記）・リストの項目を、足す・取り除く・移す。元の材料は無い | `edit_data_module` で行う。手順は [references/edit.md](references/edit.md)。元の XML を保ったまま、その場所だけが変わる。**版と変更の印は変わらない。** 発行済みの版（`inWork` が `00`）は、利用者が明示したときだけ編集する |
+| 手順・段落・警告（注意・注記）・リストの項目を、足す・取り除く・移す。元の材料は無い | `edit_data_module` で行う。手順は [references/edit.md](references/edit.md)。元の XML を保ったまま、その場所だけが変わる。発行済みの版（`inWork` が `00`）は、そのままでは編集しない。作業中の版を始めて（`start_revision`）変更の印を付けるか、版を変えずに書き換えるか、やめるかを、利用者に選んでもらう。発行（発行番号を上げる）は行わない |
 | それ以外の構造の変更（表・図・前提条件の品目を足す、文を書き換える、節点を置き換える）。元の材料は無い | **この Skill では扱わない。** できないことと、上の理由（作り直すと元の内容が落ちる）を伝える |
 | 発行済みの DM を直して、版を上げ、変更の印を付ける | **この Skill では扱わない。** 版を上げて変更の印を付ける操作は、writer にまだ無い |
 
@@ -190,4 +190,5 @@ verify の `reconcile_dml` を `csdbDirs` で呼ぶ（`path` を省くと、CSDB
 - DML を作る・更新する（writer にまだ無い）
 - CSDB にある DM を reader で読み、その木を下書きに写して作り直すこと（元の内容が落ちる）
 - 利用者が明示していないのに、発行済みの版を編集すること（`edit_data_module` の `allowReleasedIssue: true`）
-- `edit_data_module` で編集した DM を、「版を上げた」「変更の印を付けた」と報告すること（どちらも行われない）
+- 利用者に聞かずに、作業中の版を始めること（`start_revision`）、`issueType`・更新の理由・`changeMark` を決めること
+- 作業中の版を始めた DM を「発行した」「版を上げた」と報告すること（発行番号は上がらない）。`marking` を渡していない編集を「変更の印を付けた」と報告すること
