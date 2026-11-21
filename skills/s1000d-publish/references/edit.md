@@ -30,7 +30,8 @@ writer が 0.5.x のときは `edit_data_module` だけがあり、`marking` も
 ### E1 — 何を変えるかと、版を確かめる
 
 1. どの DM の、どこに、何をするのかを利用者に確かめる
-2. reader の `read_data_module` を `includeLocation: true` で呼んで DM を読み、`issueInfo` の `inWork` を見る（同じ応答を E2 で使う）
+2. reader の `read_data_module` を `includeLocation: true` で呼んで DM を読み、`issueInfo` の `inWork` と、`identAndStatus.issueType` を見る（同じ応答を E2 で使う。`section` は既定の `all` にする。`content` では識別・状態部が返らず、`outline` では `textLocations` が付かない）
+3. `issueType` が `deleted`（削除済みの版）なら、作業中の版は始められない（`start_revision` が `deleted-issue` で断る）。版の扱いや `issueType` を聞く前に、そのことを利用者に伝える。下の選択肢のうち、「作業中の版を始めて、S1000D の決まりに沿って直す」は示さない
 
 | `inWork` | 行うこと |
 |---|---|
@@ -71,7 +72,7 @@ writer が 0.5.x のときは `edit_data_module` だけがあり、`marking` も
 
 4. 利用者に、次を示して確認を得る: 新しいファイル名、`issueType`、消える前の版の変更の印と理由の数、取り除かれる要素（`deletedElements[]`）。**発行済みの版のファイルは変わらないこと**も伝える
 5. 同じ引数に `write: true` を付けて呼ぶ。`written[]` に新しいファイルのパスが入る。`writeSkipped` が `write-conflict` なら、同じ名前のファイルが既にある。上書きせず、利用者に伝える
-6. **これ以降は、新しいファイル（`written[0]`）を対象にする。** reader でそのファイルを `includeLocation: true` で読み直す（場所は、元のファイルのものを使い回さない）
+6. **これ以降は、新しいファイル（`written[0]`）を対象にする。** reader でそのファイルを `includeLocation: true` で読み直す（場所は、元のファイルのものを使い回さない。`section` は `content` か `all` にする。`outline` では `textLocations` が付かない）
 
 ### 変更の印を付けるかを確かめる
 
@@ -89,11 +90,26 @@ writer が 0.5.x のときは `edit_data_module` だけがあり、`marking` も
 - `changeMark`（`"1"` は変更線などの表示を出す、`"0"` は出さない。プロジェクトの決まりによる）
 - 同じ理由による変更が、この DM に既に入っているか。reader の応答の `identAndStatus.reasonForUpdates[]` に、その理由があるかを見る。あれば、その `id` を使う（E3）
 
+### 利用者に聞く項目のまとめ方
+
+聞く項目は多い。次の組ごとに、1 度にまとめて聞いてよい。**まとめて聞いても、決めるのは利用者である。** 答えを自分で補わない。
+
+| 聞く時点 | まとめて聞いてよい項目 |
+|---|---|
+| E1 で DM を読み、内容を利用者に見せた後 | 何を変えるか。発行済みの版なら、版の扱い（3 つの選択肢）。作業中の版を始めるなら `issueType`。変更の種類（変更の印で示す変更か、編集上の変更か、印も理由も付けないか）。`revised`・`status` で発行番号が `002` 以降なら、更新の理由の文と `updateReasonType` |
+| `start_revision` を書かずに呼び、結果を見せた後（E1a の 4） | 作業中の版を書き込んでよいか。変更の印を付けるなら、更新の理由の文・`updateReasonType`・`changeMark` |
+| `edit_data_module` を書かずに呼び、結果を見せた後（E5） | 編集を書き込んでよいか。E7 を行うなら、その理由の文と `updateReasonType` |
+| `add_reason_for_update` を書かずに呼び、結果を見せた後（E7 の 3） | 理由を書き込んでよいか |
+
+- **書き込みの確認は、書かずに呼んだ結果を見せた後にだけ聞く。** 結果を見せる前に、後の書き込みの確認まで先に取らない
+- 確認の後に、編集・文・値のどれかを変えたら、書かずに呼び直して結果を見せ、確認を取り直す
+
 ### E2 — 場所を得る
 
 編集の場所は、reader の `read_data_module` を **`includeLocation: true`** で呼んだ応答にある、各節点の `location.path` で指す（例: `/dmodule/content/procedure/mainProcedure/proceduralStep[2]`）。`includeLocation` を渡さないと、応答に `location` も `textLocations` も無い（reader 0.12.0 以降）。
 
 - path を自分で組み立てない。応答にある値を写す
+- **場所を得るための読み取りは、`section` を `content` か `all`（既定）にする。** `section: "outline"` でも各節点に `location` は付くが、手順の節点の `textLocations` は付かない
 - 手順（`kind: "step"`）の `text` は、その手順の直下にある段落（子を持たないもの）を、すべてつないだ文である。その段落には節点が無いので、`location` も無い。代わりに、手順の節点の `textLocations[]` に、つないだ段落ごとの場所が並びの順に入っている（`textLocations[0]` が `text` の最初の段落）。その段落だけを取り除く・移すときは、`textLocations[i].path` を `at` に写す（reader 0.13.0 以降）
 - `text` のどの部分がどの段落かは、応答からは分からない（段落の文は空白 1 つでつないである）。段落が 2 つ以上あるときは、取り除く・移す段落が何番目かを、E5 で文と一緒に利用者に示して確かめる
 - リストの項目（`listItem`）は、段落が 1 つのときにその段落が `text` になり、`textLocations` は付かない。項目そのもの（`listItem` の `location.path`）を対象にする。段落だけを取り除くと項目が空になり、XSD のエラーで書き込まれない
@@ -123,6 +139,7 @@ writer が 0.5.x のときは `edit_data_module` だけがあり、`marking` も
 - **1 回の呼び出しの編集は、すべて同じ理由を指す。** 理由が違う編集は、呼び出しを分ける
 - 印の付き方: insert は足した要素に `add`。remove は**要素を取り除かずに** `delete` の印を付けて残す。move は、同じ親の中の移動だけができ、親に `modify` が付く
 - 節点を別の内容に置き換えたいときは、同じ呼び出しで、元の節点の remove と、その節点の `after`（か `before`）への insert を書く。元の節点は `delete` の印で残り、新しい節点に `add` の印が付く
+- 置き換える先の種類が元と違うとき（手順を注記にする、など）は、元の節点の隣に置けないことがある。並びの順（下の「決まり」）に合う場所への insert にする。たとえば、入れ子の手順を注記に置き換えるなら、注記は親の手順の中の、入れ子の手順より前に足す。同じ呼び出しの remove と insert で書くことは変わらない
 - 親が変わる移動は断られる（`move-across-parents`）。元の場所の remove と、行き先への insert で書く
 - 印の文・種類・`changeMark` を、自分で補わない
 
@@ -182,7 +199,7 @@ writer が 0.5.x のときは `edit_data_module` だけがあり、`marking` も
 
 ### E6 — 書き込んで、確かめる
 
-1. 利用者の確認の後に、同じ `edits` を `write: true` で呼ぶ。`written[]` にファイルのパスが入る。`writeSkipped` が返ったら、`reason` と `detail` をそのまま伝える
+1. 利用者の確認の後に、同じ `edits`（と、渡していたなら同じ `marking`）を `write: true` で呼ぶ。`path` のファイルが上書きされるので、`overwrite` は付けない（`add_reason_for_update` も同じ）。`written[]` にファイルのパスが入る。`writeSkipped` が返ったら、`reason` と `detail` をそのまま伝える
 2. verify の `verify_data_module` で、書いたファイルを検証する
 3. 報告する。[report.md](report.md) の雛形のうち、該当する項目だけを使い、「材料と目的」に「CSDB にある DM の構造の編集」と書く。次を必ず入れる
    - 対象の DM（DMC、版、ファイル）
@@ -212,5 +229,6 @@ writer が 0.5.x のときは `edit_data_module` だけがあり、`marking` も
 - 編集上の変更（`urt01`）に `marking` を渡すこと。変更の印で示す変更の理由を、`add_reason_for_update` で足すこと
 - 同じ理由の 2 回目からの編集で、`marking.reason` を渡して理由を増やすこと（`marking.reasonRefId` を使う）
 - 作業中の版を始めた後に、元の（発行済みの）ファイルを編集すること
+- 書かずに呼んだ結果を見せる前に、書き込みの確認を取ること。確認の後に編集・文・値を変えたのに、書かずに呼び直さずに書き込むこと
 - 「発行した」「版を上げた」と報告すること（発行番号は上がらない。行ったのは、作業中の版を始めることだけ）
 - `marking` を渡していないのに、「変更の印を付けた」と報告すること
