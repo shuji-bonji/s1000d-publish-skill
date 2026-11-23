@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2 (2026-11-24)
+
+### 変更
+
+- Phase 5 の参照の状態の注意を書き直しました。s1000d-core 0.16.0 の修正で、`verification.references` に `specificationReferences` が付く版（s1000d-verify-mcp 0.9.0・s1000d-writer-mcp 0.7.0 以降）では、仕様書への `dmRef` だけが残っても `references.state` が `resolved` になります。その版での書き方と、付かない古い版での読み替え（`fixes[]` が空で `omitted.specificationReferences` が `unresolvedCount` と同じ）の両方を書きました。
+
 ## 0.4.1 (2026-11-21)
 
 0.4.0 の改版の手順を、plugin 版の MCP で 1 件通して分かった、手順の足りない点を直しました（手順の文だけの変更です）。

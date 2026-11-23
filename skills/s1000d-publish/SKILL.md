@@ -129,7 +129,7 @@ brex があれば、`explain_brex` で、利用者のプロジェクトの BREX 
 | `references.state: unresolved` | 内訳を確かめて書く（次の注意） | 一括で「参照切れ」「問題なし」 |
 
 > [!NOTE]
-> `references.state` が `unresolved` でも、原因が仕様書の章への `dmRef`（モデル識別コード `S1000D`。既定 BREX への参照など）だけのことがある。`fixes[]` が空で `omitted.specificationReferences` が `unresolvedCount` と同じなら、残りは仕様書への参照だけで、CSDB に無いのが通常。内訳に迷ったら verify の `check_references` で確かめ、「仕様書への参照のみ未解決」と書く。`csdbDirs` を渡さないと、参照を探す先が無いという `none` の修正が 1 件付く。
+> 仕様書の章への `dmRef`（モデル識別コード `S1000D`。既定 BREX への参照など）は、プロジェクトの CSDB に無いのが通常で、誤りではない。`verification.references` に `specificationReferences`（件数）が付く版では、これは `unresolvedCount` に入らず、仕様書への参照だけが残っていても `references.state` は `resolved` になる。そのときは「参照はすべて解決。仕様書への参照 N 件は CSDB の外」と書く。`specificationReferences` が付かない古い版では、`references.state` が `unresolved` でも、原因が仕様書への参照だけのことがある。`fixes[]` が空で `omitted.specificationReferences` が `unresolvedCount` と同じなら、残りは仕様書への参照だけなので、「仕様書への参照のみ未解決」と書く。内訳に迷ったら verify の `check_references` で確かめる。`csdbDirs` を渡さないと、参照を探す先が無いという `none` の修正が 1 件付く。
 
 > [!NOTE]
 > **`totals` や参照の状態を読むときの注意（spec モード: 配布物の既定 BREX を使うとき）。** 既定 BREX は仕様書の配布物（`S1000D_SPEC_DIR`）の中にあり、CSDB のフォルダーには無い。`csdbDirs` に書き込み先だけを渡すと、`brexDmRef` が指す既定 BREX への参照が未解決として数えられることがある（core 0.8.1 以降、つまり verify 0.6.1 では、BREX の工程でたどれた層は解決済みになる）。逆に、`verify_csdb` に既定 BREX のフォルダーまで渡すと、既定 BREX 自身の DM も検証の対象に入り、`totals` の件数に加わる。自分が作った DM の件数と合わせるときは、`results[]` の `path` で分けて数える。
